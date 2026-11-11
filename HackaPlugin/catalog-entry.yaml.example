@@ -1,0 +1,14 @@
+# Copy this file into NousResearch/hermes-agent/plugin-catalog/pirulito.yaml
+# only after replacing the placeholders and pinning an immutable 40-character commit SHA.
+name: pirulito
+description: P.I.R.U.L.I.T.O. (Plugin Inspection, Rate Uniformity & Local Integrity Token Optimizer) for Hermes Agent
+repo: https://github.com/JeffersonRafael-Profissional/pirulito
+sha: 0000000000000000000000000000000000000000
+version: 0.1.0
+maintainer: Jefferson Rafael
+requires_hermes: ">=0.21.5"
+category: models
+capabilities:
+  provides_tools: [adaptive_budget]
+  provides_hooks: [pre_llm_call, post_api_request, api_request_error]
+  provides_middleware: [llm_request, llm_execution]

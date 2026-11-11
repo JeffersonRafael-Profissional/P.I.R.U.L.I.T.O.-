@@ -1,0 +1,150 @@
+# Base de Conhecimento: Hackathon Hermes Agent
+
+---
+
+## 1. Visão Geral do Hackathon
+
+* **Organização:** Nous Research.
+
+
+* **Duração:** 7 dias.
+
+
+* **Prazo Final de Submissão:** 11 de novembro de 2026, às 17:00 EST (**19:00 no Horário de Brasília / BRT**).
+
+
+* **Elegibilidade:** Qualquer categoria de plugin é elegível (ferramentas, memória, conectores, UI Desktop, etc.).
+
+
+* **Premiação Total:** $20.000 em dinheiro, troféus em letreiro neon, mercadorias oficiais (*merch*) e créditos de API.
+
+
+
+### Estrutura de Premiação
+
+| Posição | Prêmio em Dinheiro | Prêmios Adicionais | Créditos de API |
+| --- | --- | --- | --- |
+| **1º Lugar** | $10.000 | Letreiro Neon + Merch | $1.000
+
+ |
+| **2º Lugar** | $5.000 | Letreiro Neon + Merch | $1.000
+
+ |
+| **3º Lugar** | $2.500 | Letreiro Neon + Merch | $1.000
+
+ |
+| **4º Lugar** | $1.500 | Merch | $500
+
+ |
+| **5º Lugar** | $1.000 | Merch | $500
+
+ |
+| **Runners-up (5x)** | — | Merch | $250 cada
+
+ |
+
+---
+
+## 2. Processo e Requisitos de Submissão
+
+Para ter a submissão aceita, o participante deve realizar três etapas obrigatórias:
+
+1. **Pull Request no GitHub:** Abrir um PR no repositório `NousResearch/hermes-agent` adicionando o arquivo de catálogo `plugin-catalog/<nome>.yaml`.
+
+
+2. **Vídeo Demonstrativo:** Publicar um vídeo de demonstração com duração máxima de **90 segundos** no X (Twitter) marcando a `@NousResearch`.
+
+
+3. **Formulário de Inscrição:** Enviar os links do PR e do vídeo através do formulário oficial (`[form.typeform.com/to/FwJLvOln](https://form.typeform.com/to/FwJLvOln)`).
+
+
+
+### Critérios de Avaliação dos Jurados
+
+* **Utilidade (*Usefulness*):** O quão relevante e funcional é o problema resolvido.
+
+
+* **Confiabilidade (*Reliability*):** Estabilidade e tratamento de erros na execução.
+
+
+* **Polimento (*Polish*):** Qualidade do código, documentação e acabamento visual/UX.
+
+
+* **Criatividade (*Creativity*):** Originalidade do plugin.
+
+
+* **Diferencial Arquitetural:** Os jurados dão preferência explicita a plugins que realizam tarefas estruturais que um *prompt* ou *skill* simples não conseguiriam executar.
+
+
+
+### Regras de Conteúdo e Moderação
+
+* **Conteúdo Explícito:** Não existem restrições explícitas contra conteúdo explícito nas regras do evento.
+
+
+* **Segurança de Código:** Todo PR passa por verificação automatizada (`hermes plugins validate`) e revisão humana rigorosa. É proibido código malicioso, substituição de funções internas do núcleo (*core overrides*) ou atualizadores automáticos não auditados.
+
+
+
+---
+
+## 3. Diretrizes de Admissão no Catálogo (Hermes Marketplace)
+
+A aprovação no catálogo unificado do Hermes depende do cumprimento estrito das regras de admissão:
+
+* **Fixação de Commit SHA:** O manifesto de catálogo deve fixar obrigatoriamente o commit em uma hash completa de 40 caracteres (SHA). Branches, tags ou SHAs curtos são rejeitados.
+
+
+* **Proibição de Código Auto-Atualizável:** Plugins listados não podem baixar ou substituir seu próprio código via rede após a instalação.
+
+
+* **Declaração Transparente de Capacidades:** Toda permissão especial (como `tools.override` ou `llm.model_override`) deve ser explicitada na seção `capabilities:` do manifesto `plugin.yaml`.
+
+
+* **Gestão de Segredos e OAuth:** O plugin não deve ler arquivos `.env` ou credenciais diretamente do disco. Chaves e tokens devem ser consumidos via `agent.secret_scope.get_secret()`, solicitações autenticadas `credentialed_provider_request` ou rotas autorizadas sob `oauth:`.
+
+
+
+---
+
+## 4. Arquitetura e Desenvolvimento de Plugins
+
+### Estrutura Padrão de Arquivos (Plugin Nativo Python)
+
+```text
+~/.hermes/plugins/<nome-do-plugin>/
+├── plugin.yaml      # Manifesto (nome, versão, ferramentas, hooks, capacidades)
+├── schemas.py       # JSON Schema das ferramentas expostas ao LLM
+├── tools.py         # Handlers Python que executam e retornam strings JSON
+└── __init__.py      # Função register(ctx) para integrar à engine do Hermes
+```[cite: 3, 5]
+
+### Utilitários Nativos de Validação e Teste
+* `hermes plugins validate /caminho/do/plugin --install-deps`: Executa a mesma bateria de testes e segurança da integração contínua (CI) do repositório oficial[cite: 5, 7].
+* `hermes plugins doctor . --ci`: Executa o plugin em um ambiente isolado (`HERMES_HOME` temporário) para testar descoberta, parse de manifesto e conexões[cite: 5].
+
+### Principais Interfaces Plugáveis
+* **Hooks & Middleware:** Interceptam eventos como `pre_llm_call`, `post_tool_call`, `pre_api_request` e `post_api_request`[cite: 3, 5].
+* **Memory Providers:** Provedores de memória externa contínua (ex: Honcho, Mem0) que sincronizam contexto a cada turno (`sync_turn`)[cite: 2, 5].
+* **Desktop SDK:** Adiciona componentes de UI (painéis, abas, widgets) ao Hermes Desktop[cite: 2, 5].
+* **Platform Adapters:** Conecta o agente a novos canais (Discord, Telegram, Slack)[cite: 5].
+
+---
+
+## 5. Tendências de Mercado & Ideias de Projetos
+
+### Categorias em Alta no Hermes Marketplace
+1. **Memória de Longo Prazo:** Motores vetoriais e grafos de conhecimento que mantêm o contexto entre sessões[cite: 2].
+2. **Conectores SaaS & MCP:** Integração nativa com ferramentas corporativas via Model Context Protocol (ex: Composio, Notion, Google Meet)[cite: 2, 5].
+3. **Navegação Web Avançada:** Extração de documentações e busca profunda estruturada em Markdown (ex: Firecrawl)[cite: 2].
+4. **Observabilidade e Gestão de Custos:** Monitoramento em tempo real de consumo de tokens, latência e limitação de gastos (*spend limits*)[cite: 2, 3].
+5. **Painéis Interativos (Desktop SDK):** Abas visuais de acompanhamento de tarefas (ex: Kanban) diretamente na interface gráfica[cite: 2].
+
+### Exemplo Recomendado para o Hackathon: *Budget Guard*
+Um plugin focado na **Categoria de Observabilidade/Hooks** que monitora custos de LLM em tempo real[cite: 3]:
+* **Mecanismo:** Utiliza os ganchos `pre_api_request` e `post_api_request` para contabilizar o uso de tokens a cada requisição[cite: 3].
+* **Funcionalidade:** Permite definir um limite financeiro por sessão (`max_session_cost_usd`) e congela preventivamente a execução caso o teto seja atingido, evitando surpresas na fatura de API[cite: 3].
+
+<FollowUp label="Quer ver o código de um manifesto ou hook específico para o seu plugin?" query="Mostre exemplos práticos de código de hooks e manifestos plugin.yaml para o Hermes Agent."/>
+
+```

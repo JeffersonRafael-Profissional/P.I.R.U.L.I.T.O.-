@@ -1,0 +1,38 @@
+name: pirulito
+version: 0.1.0
+manifest_version: 2
+api_version: 1
+requires_hermes: ">=0.21.5"
+description: "P.I.R.U.L.I.T.O. (Plugin Inspection, Rate Uniformity & Local Integrity Token Optimizer) - Budget-aware adaptive LLM model routing middleware for Hermes Agent."
+author: Jefferson Rafael
+license: MIT
+tags: [pirulito, routing, budget, observability, middleware, cost]
+provides_tools:
+  - adaptive_budget
+provides_hooks:
+  - pre_llm_call
+  - post_api_request
+  - api_request_error
+provides_middleware:
+  - llm_request
+  - llm_execution
+config_schema:
+  enabled: {type: bool, default: true, label: "Enable adaptive routing"}
+  allowed_providers: {type: str, default: "openrouter", description: "Comma-separated providers allowed to receive model rewrites; use * for all."}
+  session_budget_usd: {type: float, default: 0.50, label: "Session budget (USD)", description: "0 disables this cap."}
+  daily_budget_usd: {type: float, default: 5.00, label: "Daily budget (USD)", description: "UTC day; 0 disables this cap."}
+  reserve_ratio: {type: float, default: 0.10, description: "Fraction of remaining budget held in reserve when selecting a tier."}
+  cost_safety_multiplier: {type: float, default: 4.0, description: "Conservative multiplier applied to projected request cost before selecting a tier."}
+  expected_output_tokens: {type: int, default: 800, description: "Conservative output-token projection used before a request."}
+  balanced_threshold: {type: int, default: 35, description: "Complexity score that activates the balanced tier."}
+  premium_threshold: {type: int, default: 65, description: "Complexity score that activates the premium tier."}
+  hard_stop: {type: bool, default: true, description: "Block the next turn after a session or daily cap is exhausted."}
+  economy_model: {type: str, default: "", label: "Economy model", description: "Provider-native model id. Blank disables the tier."}
+  economy_input_usd_per_million: {type: float, default: 0.0}
+  economy_output_usd_per_million: {type: float, default: 0.0}
+  balanced_model: {type: str, default: "", label: "Balanced model", description: "Provider-native model id. Blank disables the tier."}
+  balanced_input_usd_per_million: {type: float, default: 0.0}
+  balanced_output_usd_per_million: {type: float, default: 0.0}
+  premium_model: {type: str, default: "", label: "Premium model", description: "Provider-native model id. Blank disables the tier."}
+  premium_input_usd_per_million: {type: float, default: 0.0}
+  premium_output_usd_per_million: {type: float, default: 0.0}

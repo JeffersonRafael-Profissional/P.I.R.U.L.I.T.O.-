@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pirulito"
+version = "0.1.0"
+description = "P.I.R.U.L.I.T.O. (Plugin Inspection, Rate Uniformity & Local Integrity Token Optimizer) for Hermes Agent"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+
+[tool.setuptools]
+packages = ["adaptive_budget_router"]
